@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+        <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+        
+        
+        
+
+        <title>Forum de Secretarios</title>
+        <!-- Bootstrap core CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- Custom styles for this template -->
+        <link rel="stylesheet" type="text/css" href="css/super-awesome.css">
+    </head>
+    <!-- BODY -->
+    <body>
+        <div class="container-full h-100" >
+            <div class="row" style="overflow: hidden; height:600px">
+                <div id="map" class="col-12 no-float"></div>
+                
+            </div>
+            <div class="row h-20" >
+            	
+            	<div style="overflow:scroll; margin-left:30px">
+                	<h1 style="font-size:80px; color:#EA3348"><br>54</h1>
+                	<h3>municípios</br>membros</h3>
+                </div>
+                <div style="overflow:scroll;">
+                	<canvas id="canvas" style="max-height:300px"></canvas>
+                </div>
+            	<div style="overflow:scroll;">
+                	<div><img src="img/logo.png" style="max-width:100%; max-height:100px; margin-top:20px"></div>
+         
+                </div>
+
+            </div>
+        </div>
+        <!-- include leaflet.js library -->
+        <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+        <link rel="stylesheet" src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+        <link rel="stylesheet" src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+        <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+        <link rel="stylesheet" href="js/leaflet_legend.css" />
+        <script type="text/javascript" src="js/leaflet_legend.js"></script>
+        <script>
+    // Create Leaflet map object
+  function setInitialMapZoom() {
+   var viewportWidth = window.innerWidth;
+   var mapZoom;
+   if (viewportWidth < [1000]) {mapZoom = [4];}    
+   else if (viewportWidth >= [1000] && viewportWidth < [1300]) {mapZoom = [5];}    
+   else {mapZoom = [6];}
+  return mapZoom;
+  }
+    
+    var map = L.map('map',
+    	{
+    		maxZoom: 8
+    	}).setView([-15.377339, -51.872039], setInitialMapZoom());
+            
+    
+
+
+
+    // Add Tile Layer basemap
+    L.tileLayer('https://api.mapbox.com/styles/v1/plano-c/cl60vgptt000415o1oysareuf/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoicGxhbm8tYyIsImEiOiJjamYwNndnYTYwZWZoMndwYWY3N3RyNGY0In0.B3JLcO6YEsZ7zfUGwz7bWw', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+      '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    id: 'mapbox.streets'
+  }).addTo(map);
+
+
+
+
+    map.setMaxBounds(map.getBounds());
+
+
+     var geojsonMarkerOptions = {
+          radius: 7,
+          fillColor: "#EA3348",
+          color: "#ffffff",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.8
+      };
+
+
+
+
+      function getValue(x) {
+        return x == "Membro" ? "#ffffff" :
+               x == "Coordenação" ? "#BD0026" :
+               x == "Vice-presidente" ? "#ffffff" :
+               x == "Presidente" ? "#41BCCC" :
+                 "#ffffff";
+      }
+
+      function get2Value(x) {
+        return x == "Membro" ? "#EA3348" :
+               x == "Vice-presidente" ? "#41BCCC" :
+               x == "Coordenação" ? "#EA3348" :
+               x == "Presidente" ? "#41BCCC" :
+                 "#EA3348";
+      }
+
+
+      function style(feature) {
+        return {
+          "radius": 7,
+          "color": get2Value(feature.properties["Membro/coordenação"]),
+          "fillColor": getValue(feature.properties["Membro/coordenação"]),
+          "weight": 3,
+          "opacity": 1,
+          "fillOpacity": 0.8
+
+        };
+      }
+                
+
+   
+    // loading GeoJSON file - Here my html and usa_adm.geojson file resides in same folder
+    $.getJSON("https://raw.githubusercontent.com/guilhermeiablo/guilhermeiablo.github.io/master/assets/secretarios.geojson",function(data){
+    // L.geoJson function is used to parse geojson file and load on to map
+    geojson = L.geoJSON(data, {
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, style(feature));
+    },
+    onEachFeature: function (feature, layer) {
+                popupOptions = {maxWidth: 200};
+                layer.bindPopup("<div id='popupcustom'><h5>" + feature.properties.Município + ", " + feature.properties.Estado + "</h5></div>" +
+                    "<div id='popuprest'> <p style='font-size: 14px'><b>" + feature.properties.Nome + "</b><br>" + feature.properties["Membro/coordenação"] +"</p></div>" +
+                    "<p style='font-size: 12px, display:inline, padding-left:5px, padding-right:5px'>Membro desde " +feature.properties["Membro desde"] + "<br>" + feature.properties.Cargo +"<br><i>" + feature.properties.Instituição +"</i></p></div>"
+                    ,popupOptions);
+                layer.bindTooltip(feature.properties.Município, {permanent: false, direction: "top", className: "my-labels"}).openTooltip();
+            }
+}).addTo(map);});
+
+
+
+
+
+    function getColor(d) {
+        return d === 'Membro'  ? "#de2d26" :
+               d === 'Coordenação'  ? "#377eb8" :
+               d === 'Vice-presidente' ? "#41BCCC" :
+               d === 'Presidente' ? "#4daf4a" :
+                            "#ffffff";
+    }
+
+
+    L.control.Legend({
+      title: " ",
+      position: "bottomleft",
+      legends: [{
+          label: "Membro",
+          type: "circle",
+          radius: 7,
+          color: "#EA3348",
+          fillColor: "#ffffff"
+      },
+      {
+          label: "Membro do Comitê de Coordenação",
+          type: "circle",
+          radius: 7,
+          color: "#EA3348",
+          fillColor: "#EA3348"
+      },
+      {
+          label: "Vice-presidente",
+          type: "circle",
+          radius: 7,
+          color: "#41BCCC",
+          fillColor: "#ffffff"
+      },
+      {
+          label: "Presidente",
+          type: "circle",
+          radius: 7,
+          color: "#41BCCC",
+          fillColor: "#41BCCC"
+      },]
+    }).addTo(map);
+
+
+
+
+
+
+    function getValue(x) {
+        return x == "Membro" ? "#ffffff" :
+               x == "Vice-presidente" ? "#ffffff" :
+               x == "Coordenação" ? "#BD0026" :
+               x == "Presidente" ? "#41BCCC" :
+                 "#ffffff";
+      }
+
+      function get2Value(x) {
+        return x == "Membro" ? "#EA3348" :
+               x == "Vice-presidente" ? "#41BCCC" :
+               x == "Coordenação" ? "#EA3348" :
+               x == "Presidente" ? "#41BCCC" :
+                 "#EA3348";
+      }
+
+
+
+
+     
+
+
+
+
+		var labels = ['Centro-Oeste', 'Norte', 'Sul', 'Nordeste', 'Sudeste'];
+	    var data = [4,5,8,17,29];
+	    //console.log('labels', labels, 'data', data);
+
+
+	    var ctx = canvas.getContext('2d');
+		var config = {
+		   type: 'bar',
+		   data: {
+		      labels: labels,
+		      datasets: [{
+		         label: 'Participantes por região',
+		         data: data,
+		         backgroundColor: 'rgb(234,51,72)'
+		      }]
+		   },
+		   options: {
+		   	indexAxis: 'y',
+        maintainAspectRatio: false,
+		   	plugins: {
+		      legend: {
+		        position: 'bottom',
+		        onClick: (e) => e.stopPropagation()
+		      },
+		      title: {
+		        display: true,
+		        text: ''
+		      }
+		    },
+		        scales: {
+		            y: {
+		                beginAtZero: true
+		            }
+		        }
+		    }
+		};
+
+		var chart = new Chart(ctx, config);
+
+
+            
+    
+
+    </script>
+    </body>
