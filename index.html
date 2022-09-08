@@ -28,7 +28,7 @@
             </div>
             <div class="row h-20" >
             	
-            	<div style="overflow:scroll; margin-left:30px">
+            	<div style="overflow:hidden; margin-left:30px">
                 	<h1 style="font-size:80px; color:#EA3348"><br>54</h1>
                 	<h3>municípios</br>membros</h3>
                 </div>
@@ -130,7 +130,7 @@
 
    
     // loading GeoJSON file - Here my html and usa_adm.geojson file resides in same folder
-    $.getJSON("https://raw.githubusercontent.com/guilhermeiablo/guilhermeiablo.github.io/master/assets/secretarios.geojson",function(data){
+    $.getJSON("data/secretarios.geojson",function(data){
     // L.geoJson function is used to parse geojson file and load on to map
     geojson = L.geoJSON(data, {
     pointToLayer: function (feature, latlng) {
