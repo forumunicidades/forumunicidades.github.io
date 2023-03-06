@@ -54,15 +54,15 @@
   function setInitialMapZoom() {
    var viewportWidth = window.innerWidth;
    var mapZoom;
-   if (viewportWidth < [500]) {mapZoom = [4];}    
-   else if (viewportWidth >= [500] && viewportWidth < [600]) {mapZoom = [5];}    
+   if (viewportWidth < [1000]) {mapZoom = [4];}    
+   else if (viewportWidth >= [1500] && viewportWidth < [1800]) {mapZoom = [5];}    
    else {mapZoom = [6];}
   return mapZoom;
   }
     
     var map = L.map('map',
     	{
-    		maxZoom: 12
+    		maxZoom: 8
     	}).setView([-15.377339, -51.872039], setInitialMapZoom());
             
     
