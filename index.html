@@ -55,7 +55,7 @@
    var viewportWidth = window.innerWidth;
    var mapZoom;
    if (viewportWidth < [1000]) {mapZoom = [5];}    
-   else if (viewportWidth >= [1500] && viewportWidth < [1800]) {mapZoom = [10];}    
+   else if (viewportWidth >= [1500] && viewportWidth < [1800]) {mapZoom = [8];}    
    else {mapZoom = [6];}
   return mapZoom;
   }
@@ -71,7 +71,7 @@
 
     // Add Tile Layer basemap
     L.tileLayer('https://api.mapbox.com/styles/v1/plano-c/cl60vgptt000415o1oysareuf/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoicGxhbm8tYyIsImEiOiJjamYwNndnYTYwZWZoMndwYWY3N3RyNGY0In0.B3JLcO6YEsZ7zfUGwz7bWw', {
-    maxZoom: 22,
+    maxZoom: 18,
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
       '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
       'Imagery © <a href="http://mapbox.com">Mapbox</a>',
